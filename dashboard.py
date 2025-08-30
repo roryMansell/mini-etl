@@ -3,6 +3,14 @@ import pandas as pd
 import streamlit as st
 import matplotlib.pyplot as plt
 
+uploaded = st.sidebar.file_uploader("Upload your own CSV", type=["csv"])
+if uploaded is not None:
+    df = pd.read_csv(uploaded)
+    st.success("Using uploaded data ✅")
+else:
+    df = pd.read_csv("data.csv")
+    st.info("Using sample data (from `data.csv`)")
+
 st.set_page_config(page_title="Mini ETL Dashboard", layout="centered")
 st.title("🏠 Mini ETL Dashboard")
 
@@ -23,17 +31,34 @@ st.subheader("Data preview")
 st.dataframe(filtered.head())
 
 # KPIs
-st.subheader("Summary")
+st.subheader("Summary metrics")
 col1, col2, col3 = st.columns(3)
-col1.metric("Rows", len(filtered))
-col2.metric("Cities", filtered["city"].nunique())
-col3.metric("Avg price", f"£{filtered['price'].mean():,.0f}" if not filtered.empty else "—")
+col1.metric("Total rows", len(filtered))
+col2.metric("Unique cities", filtered["city"].nunique())
+if not filtered.empty:
+    col3.metric("Average price", f"£{filtered['price'].mean():,.0f}")
+else:
+    col3.metric("Average price", "—")
 
 # Chart: average price by city within filters
 st.subheader("Average price by city")
 grouped = filtered.groupby("city")["price"].mean().sort_values(ascending=False)
 
+st.subheader("Trend of average price by year")
+trend = filtered.groupby("year")["price"].mean()
+
+st.line_chart(trend)
+
 fig, ax = plt.subplots()
 grouped.plot(kind="bar", ax=ax)
 ax.set_ylabel("Average price")
 st.pyplot(fig)
+
+st.subheader("Download cleaned dataset")
+csv = filtered.to_csv(index=False).encode("utf-8")
+st.download_button(
+    label="📥 Download CSV",
+    data=csv,
+    file_name="cleaned_data.csv",
+    mime="text/csv",
+)
