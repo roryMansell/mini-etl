@@ -20,7 +20,9 @@ df = pd.read_csv("data.csv")
 cities = ["(All)"] + sorted(df["city"].unique().tolist())
 city = st.sidebar.selectbox("City", cities)
 year_min, year_max = int(df["year"].min()), int(df["year"].max())
-year_range = st.sidebar.slider("Year range", year_min, year_max, (year_min, year_max), step=1)
+year_range = st.sidebar.slider(
+    "Year range", year_min, year_max, (year_min, year_max), step=1
+)
 
 mask = (df["year"] >= year_range[0]) & (df["year"] <= year_range[1])
 if city != "(All)":

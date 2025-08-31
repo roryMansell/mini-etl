@@ -5,6 +5,7 @@ import pandas as pd
 RAW = Path("data_raw.csv")
 OUT = Path("data.csv")
 
+
 def make_sample_data(path: Path = RAW):
     # Tiny example dataset
     df = pd.DataFrame(
@@ -16,6 +17,7 @@ def make_sample_data(path: Path = RAW):
     )
     df.to_csv(path, index=False)
 
+
 def load_and_clean(in_path: Path, out_path: Path):
     df = pd.read_csv(in_path)
     # Simple cleaning examples
@@ -26,6 +28,7 @@ def load_and_clean(in_path: Path, out_path: Path):
 
     df.to_csv(out_path, index=False)
     return df
+
 
 if __name__ == "__main__":
     if not RAW.exists():
